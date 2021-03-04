@@ -1,4 +1,4 @@
-package com.crushmero.valerian.world.gen;
+package com.crushmero.valerian.celestial.station;
 
 import java.util.Random;
 
