@@ -42,6 +42,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+/**
+ * Copy of GalacticraftCore's SpinManager class to allow our planet to have spin properties
+ * because SpinManager only takes WorldProviderSpaceStation as a param
+ *
+ */
 @SuppressWarnings({ "deprecation", "unused" })
 public class ValerianSpinManager {
 	private static final float GFORCE = 9.81F / 400F; // gravity in metres per tick squared
@@ -67,16 +72,8 @@ public class ValerianSpinManager {
 	private LinkedList<BlockPos> thrustersPlus = Lists.newLinkedList();
 	private LinkedList<BlockPos> thrustersMinus = Lists.newLinkedList();
 	private BlockPos oneSSBlock;
-	// private HashSet<BlockPos> stationBlocks = new HashSet<>();
-
 	private HashSet<BlockVec3> checked = new HashSet<BlockVec3>();
-
 	private float artificialG;
-	// Used to make continuous particles + thrust sounds at the spin thrusters in
-	// this dimension
-	// If false, make particles + sounds occasionally in small bursts, just for fun
-	// (micro attitude changes)
-	// see: BlockSpinThruster.randomDisplayTick()
 	public boolean thrustersFiring = false;
 	private boolean dataNotLoaded = true;
 	private List<Entity> loadedEntities = Lists.newLinkedList();
@@ -88,9 +85,6 @@ public class ValerianSpinManager {
 		this.worldProvider = provider;
 	}
 
-	/**
-	 * Called from WorldProviderOrbit when registering the worldObj
-	 */
 	public void registerServerSide() {
 		if (!this.worldProvider.world.isRemote) {
 			this.clientSide = false;
