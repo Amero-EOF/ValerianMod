@@ -1,20 +1,20 @@
-package com.crushmero.valerian.world.gen;
+package com.crushmero.valerian.celestial.station;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.crushmero.valerian.init.InitCelestialObjects;
+import com.crushmero.valerian.celestial.CelestialObjects;
+import com.crushmero.valerian.celestial.station.sky.SkyProviderStation;
 import com.crushmero.valerian.init.ValDimensions;
+import com.crushmero.valerian.world.AbstractWorldProvider;
 
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
-import micdoodle8.mods.galacticraft.api.prefab.world.gen.WorldProviderSpace;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
 import micdoodle8.mods.galacticraft.api.world.ISolarLevel;
 import micdoodle8.mods.galacticraft.api.world.IZeroGDimension;
 import micdoodle8.mods.galacticraft.core.Constants;
 import micdoodle8.mods.galacticraft.core.client.CloudRenderer;
-import micdoodle8.mods.galacticraft.core.client.SkyProviderOrbit;
 import micdoodle8.mods.galacticraft.core.util.ConfigManagerCore;
 import micdoodle8.mods.galacticraft.core.world.gen.dungeon.RoomTreasure;
 import net.minecraft.block.Block;
@@ -22,25 +22,25 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DimensionType;
+import net.minecraft.world.biome.BiomeProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class WorldProviderValerian extends WorldProviderSpace  implements IZeroGDimension, ISolarLevel {
+public class WorldProviderValerian extends AbstractWorldProvider implements IZeroGDimension, ISolarLevel {
 
 	Set<Entity> freefallingEntities = new HashSet<Entity>();
-	@Override
-	public void init() {
-		super.init();
-	}
 
 	@Override
 	public Class<? extends IChunkGenerator> getChunkProviderClass() {
-		// TODO Auto-generated method stub
-		return ChunkProviderValerian.class;
+		return ChunkProviderValerianStation.class;
 	}
     
-
+	@Override
+	public Class<? extends BiomeProvider> getBiomeProviderClass() {
+		return BiomeProviderStation.class;
+	}
+	
     @Override
     public DimensionType getDimensionType()
     {
@@ -102,7 +102,7 @@ public class WorldProviderValerian extends WorldProviderSpace  implements IZeroG
     @Override
     public CelestialBody getCelestialBody()
     {
-        return InitCelestialObjects.station; //here
+        return CelestialObjects.STATION; //here
     }
 
     @Override
@@ -126,7 +126,7 @@ public class WorldProviderValerian extends WorldProviderSpace  implements IZeroG
     @Override
     public boolean canSpaceshipTierPass(int tier)
     {
-        return tier > 0;
+        return tier >= 1;
     }
 
     @Override
@@ -146,7 +146,7 @@ public class WorldProviderValerian extends WorldProviderSpace  implements IZeroG
     {
         freefallingEntities.add(entity);
     }
-    
+
     @Override
     public void updateWeather()
     {
@@ -157,7 +157,7 @@ public class WorldProviderValerian extends WorldProviderSpace  implements IZeroG
     @SideOnly(Side.CLIENT)
     public void setSpinDeltaPerTick(float angle)
     {
-        SkyProviderOrbit skyProvider = ((SkyProviderOrbit)this.getSkyRenderer());
+        SkyProviderStation skyProvider = ((SkyProviderStation)this.getSkyRenderer());
         if (skyProvider != null)
             skyProvider.spinDeltaPerTick = angle;
     }
@@ -165,15 +165,15 @@ public class WorldProviderValerian extends WorldProviderSpace  implements IZeroG
     @SideOnly(Side.CLIENT)
     public float getSkyRotation()
     {
-        SkyProviderOrbit skyProvider = ((SkyProviderOrbit)this.getSkyRenderer());
+    	SkyProviderStation skyProvider = ((SkyProviderStation)this.getSkyRenderer());
         return skyProvider.spinAngle;
     }
     
     @SideOnly(Side.CLIENT)
     public void createSkyProvider()
     {
-        this.setSkyRenderer(new SkyProviderOrbit(new ResourceLocation("valerian:celestialbodies/stars/red_giant.png"), true, true));
-        
+        this.setSkyRenderer(new SkyProviderStation());
+        this.setSpinDeltaPerTick(this.getValerianSpinManager().getSpinRate());
         
         if (this.getCloudRenderer() == null)
             this.setCloudRenderer(new CloudRenderer());
@@ -196,5 +196,4 @@ public class WorldProviderValerian extends WorldProviderSpace  implements IZeroG
     {
         return null;
     }
-
 }
